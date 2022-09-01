@@ -17,11 +17,10 @@ import org.litesoft.utils.Cast;
 @MappedSuperclass
 @SuppressWarnings({"unused", "SameParameterValue"})
 public abstract class AbstractBaseEntity<T extends AbstractBaseEntity<T>> implements BaseEntity {
-    protected static <T extends AbstractBaseEntity<T>> FieldAccessors<T> createWithCommon() {
-        FieldAccessors<T> fas = new FieldAccessors<>();
-        fas.required( "id", AbstractBaseEntity::getId ).withType( UUID.class ).addMetaData( "generated, if missing" );
-        fas.with( "version", AbstractBaseEntity::getVersion ).withType( Long.class ).addMetaData( "auto" );
-        return fas;
+    protected static <T extends AbstractBaseEntity<T>> FieldAccessors<T> createWithCommon(FieldAccessors<T> fas ) {
+        return fas
+                .required( "id", AbstractBaseEntity::getId ).withType( UUID.class ).addMetaData( "generated, if missing" )
+                .auto(  "version", AbstractBaseEntity::getVersion ).withType( Long.class );
     }
 
     @Transient

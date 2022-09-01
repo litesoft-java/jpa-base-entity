@@ -5,7 +5,6 @@ import java.io.Serializable;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
-import org.litesoft.fields.Accessor;
 import org.litesoft.fields.FieldAccessors;
 import org.litesoft.utils.Cast;
 
@@ -75,8 +74,9 @@ class AbstractBaseEntityTest {
     @SuppressWarnings("unused")
     static class SimpleEntity extends AbstractBaseEntity<SimpleEntity> implements Serializable {
         @Serial private static final long serialVersionUID = 1L;
-        public static FieldAccessors<SimpleEntity> FAS = createWithCommon();
-        public static Accessor<SimpleEntity, String> FA_Value = FAS.optional( "value", SimpleEntity::getValue ).withType( String.class );
+        public static FieldAccessors<SimpleEntity> FAS = createWithCommon( FieldAccessors.of( SimpleEntity.class ) )
+                .optional( "value", SimpleEntity::getValue ).withType( String.class )
+                .done();
 
         public SimpleEntity( UUID givenId ) {
             super( SimpleEntity.class, givenId );
@@ -115,8 +115,9 @@ class AbstractBaseEntityTest {
     @SuppressWarnings("unused")
     static class OtherEntity extends AbstractBaseEntity<OtherEntity> implements Serializable {
         @Serial private static final long serialVersionUID = 1L;
-        public static FieldAccessors<OtherEntity> FAS = createWithCommon();
-        public static Accessor<OtherEntity, String> FA_Value = FAS.optional( "value", OtherEntity::getValue ).withType( String.class );
+        public static FieldAccessors<OtherEntity> FAS = createWithCommon(FieldAccessors.of( OtherEntity.class ))
+                .optional( "value", OtherEntity::getValue ).withType( String.class )
+                .done();
 
         public OtherEntity( UUID givenId ) {
             super( OtherEntity.class, givenId );
