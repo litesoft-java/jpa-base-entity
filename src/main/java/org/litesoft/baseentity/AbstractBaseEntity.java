@@ -1,6 +1,5 @@
 package org.litesoft.baseentity;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 import javax.persistence.Column;
@@ -9,7 +8,7 @@ import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
 import javax.persistence.Version;
 
-import org.litesoft.fields.Accessor;
+import org.litesoft.fields.Equivalance;
 import org.litesoft.fields.FieldAccessors;
 import org.litesoft.fields.ToStringBuilder;
 import org.litesoft.utils.Cast;
@@ -17,10 +16,10 @@ import org.litesoft.utils.Cast;
 @MappedSuperclass
 @SuppressWarnings({"unused", "SameParameterValue"})
 public abstract class AbstractBaseEntity<T extends AbstractBaseEntity<T>> implements BaseEntity {
-    protected static <T extends AbstractBaseEntity<T>> FieldAccessors<T> createWithCommon(FieldAccessors<T> fas ) {
+    protected static <T extends AbstractBaseEntity<T>> FieldAccessors<T> createWithCommon( FieldAccessors<T> fas ) {
         return fas
                 .required( "id", AbstractBaseEntity::getId ).withType( UUID.class ).addMetaData( "generated, if missing" )
-                .auto(  "version", AbstractBaseEntity::getVersion ).withType( Long.class );
+                .auto( "version", AbstractBaseEntity::getVersion ).withType( Long.class );
     }
 
     @Transient
@@ -75,18 +74,7 @@ public abstract class AbstractBaseEntity<T extends AbstractBaseEntity<T>> implem
     }
 
     protected final boolean checkEquivalent( T them, FieldAccessors<T> fas ) {
-        if ( !sameTypes( this, them ) ) {
-            return false;
-        }
-        T us = Cast.it( this );
-        List<Accessor<T, ?>> all = fas.getAll();
-        for ( int i = 2; i < all.size(); i++ ) { // Skip the ID & Version
-            Accessor<T, ?> accessor = all.get( i );
-            if ( !Objects.equals( accessor.getValue( us ), accessor.getValue( them ) ) ) {
-                return false;
-            }
-        }
-        return true;
+        return Equivalance.mostly( sameTypes( this, them ), Cast.it( this ), them, fas, 2 );
     }
 
     private static boolean sameTypes( AbstractBaseEntity<?> abe1, AbstractBaseEntity<?> abe2 ) {
