@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.litesoft.fields.FieldAccessors;
+import org.litesoft.fields.ToStringBuilder;
 import org.litesoft.utils.Cast;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -16,8 +17,8 @@ class AbstractBaseEntityTest {
     @Test
     void test_SimpleEntity_FAS() {
         String expected = String.join( "\n"
-                , "id      UUID   (required & generated, if missing)"
                 , "version Long   (auto)"
+                , "id      UUID   (required & generated, if missing)"
                 , "value   String"
                 , "" ); // force new line at end
 
@@ -53,19 +54,19 @@ class AbstractBaseEntityTest {
         AbstractBaseEntity<?> abe2 = oe1;
         // assert that, all fields being the same, "type" difference still fails:
         assertNotEquals( abe1, abe2 );
-        assertFalse( abe1.checkEquivalent( Cast.it( abe2 ), Cast.it( SimpleEntity.FAS ) ) );
+        assertFalse( abe1.isEquivalent( Cast.it( abe2 ) ) );
 
         String se1Str = se1.toString();
         assertNotEquals( se1Str, se3.toString() ); // Version difference
         assertNotEquals( se1Str, oe1.toString() ); // Type label different
 
-        assertEquals( se1.stringFrom( null, SimpleEntity.FAS ), // Same fields AND Type label not added
-                      oe1.stringFrom( null, OtherEntity.FAS ) );
+        assertEquals( new ToStringBuilder().addAll( se1, SimpleEntity.FAS ).toString(), // Same fields AND Type label not added
+                      new ToStringBuilder().addAll( oe1, OtherEntity.FAS ).toString() );
 
         assertEquals( String.join( "\n"
                 , "SimpleEntity:"
-                , "  id: 4da10d9c-8640-458c-a660-6f641da5ca3b"
                 , "  version: null"
+                , "  id: 4da10d9c-8640-458c-a660-6f641da5ca3b"
                 , "  value: 'Fred'"
                                    // No trailing new line!
         ).replace( '\'', '"' ), se1Str );
@@ -102,20 +103,15 @@ class AbstractBaseEntityTest {
         }
 
         @Override
-        public boolean isEquivalent( SimpleEntity them ) {
-            return checkEquivalent( them, FAS );
-        }
-
-        @Override
-        public String toString() {
-            return stringFrom( this.getClass().getSimpleName(), FAS );
+        protected FieldAccessors<SimpleEntity> fas() {
+            return FAS;
         }
     }
 
     @SuppressWarnings("unused")
     static class OtherEntity extends AbstractBaseEntity<OtherEntity> implements Serializable {
         @Serial private static final long serialVersionUID = 1L;
-        public static FieldAccessors<OtherEntity> FAS = createWithCommon(FieldAccessors.of( OtherEntity.class ))
+        public static FieldAccessors<OtherEntity> FAS = createWithCommon( FieldAccessors.of( OtherEntity.class ) )
                 .optional( "value", OtherEntity::getValue ).withType( String.class )
                 .done();
 
@@ -143,13 +139,8 @@ class AbstractBaseEntityTest {
         }
 
         @Override
-        public boolean isEquivalent( OtherEntity them ) {
-            return checkEquivalent( them, FAS );
-        }
-
-        @Override
-        public String toString() {
-            return stringFrom( this.getClass().getSimpleName(), FAS );
+        protected FieldAccessors<OtherEntity> fas() {
+            return FAS;
         }
     }
 }

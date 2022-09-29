@@ -18,19 +18,20 @@ import org.litesoft.utils.Cast;
 public abstract class AbstractBaseEntity<T extends AbstractBaseEntity<T>> implements BaseEntity {
     protected static <T extends AbstractBaseEntity<T>> FieldAccessors<T> createWithCommon( FieldAccessors<T> fas ) {
         return fas
+                .auto( "version", AbstractBaseEntity::getVersion ).withType( Long.class )
                 .required( "id", AbstractBaseEntity::getId ).withType( UUID.class ).addMetaData( "generated, if missing" )
-                .auto( "version", AbstractBaseEntity::getVersion ).withType( Long.class );
+                ;
     }
 
     @Transient
     private final Class<T> type;
 
-    @Id
-    @Column(length = 16, unique = true, nullable = false)
-    private UUID id;
-
     @Version
     private Long version; // default to null
+
+    @Id
+    @Column(unique = true, nullable = false)
+    private UUID id;
 
     protected AbstractBaseEntity( Class<T> type, UUID givenId ) {
         this.type = type;
@@ -49,8 +50,6 @@ public abstract class AbstractBaseEntity<T extends AbstractBaseEntity<T>> implem
         this.version = version;
     }
 
-    public abstract boolean isEquivalent( T them );
-
     @Override
     public final int hashCode() {
         return id.hashCode();
@@ -67,14 +66,24 @@ public abstract class AbstractBaseEntity<T extends AbstractBaseEntity<T>> implem
                (sameTypes( this, them ) && (Objects.equals( this.id, them.id )));
     }
 
-    protected final String stringFrom( String prefix, FieldAccessors<T> fas ) {
-        return new ToStringBuilder( prefix )
-                .addAll( Cast.it( this ), fas )
-                .toString();
+    @SuppressWarnings("unused")
+    public final boolean isEqualLessVersion( T them ) {
+        return Equivalance.mostly( sameTypes( this, them ), us(), them, fas(), 1 ); // Skip Version !
     }
 
-    protected final boolean checkEquivalent( T them, FieldAccessors<T> fas ) {
-        return Equivalance.mostly( sameTypes( this, them ), Cast.it( this ), them, fas, 2 );
+    public final boolean isEquivalent( T them ) {
+        return Equivalance.mostly( sameTypes( this, them ), us(), them, fas(), 2 ); // Skip Version, & ID !
+    }
+
+    @Override
+    public final String toString() {
+        return new ToStringBuilder( this.getClass().getSimpleName() ).addAll( us(), fas() ).toString();
+    }
+
+    abstract protected FieldAccessors<T> fas();
+
+    protected T us() {
+        return Cast.it( this );
     }
 
     private static boolean sameTypes( AbstractBaseEntity<?> abe1, AbstractBaseEntity<?> abe2 ) {
