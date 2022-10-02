@@ -6,7 +6,7 @@
 
 	<groupId>org.litesoft</groupId>
     <artifactId>jpa-base-entity</artifactId>
-    <version>3.0.3</version>
+    <version>3.0.5</version>
     <packaging>jar</packaging>
 
     <name>jpa-base-entity</name>
@@ -57,16 +57,26 @@
     </properties>
 
     <dependencies>
+		<dependency>
+			<groupId>org.litesoft</groupId>
+			<artifactId>codec-helpers</artifactId>
+			<version>1.1.2</version>
+		</dependency>
         <dependency>
             <groupId>org.litesoft</groupId>
             <artifactId>type-utils</artifactId>
-			<version>[1.0.7,1.1)</version>
+			<version>[1.0.9,1.1)</version>
         </dependency>
         <dependency>
             <groupId>org.litesoft</groupId>
             <artifactId>object-fields</artifactId>
-			<version>[3.0.3,3.1)</version>
+			<version>[3.0.5,3.1)</version>
         </dependency>
+		<dependency>
+			<groupId>org.litesoft</groupId>
+			<artifactId>uuid-tools</artifactId>
+			<version>1.2.5</version>
+		</dependency>
 
         <dependency>
             <groupId>jakarta.persistence</groupId>
