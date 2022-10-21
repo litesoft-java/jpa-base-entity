@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.litesoft.baseentity.AbstractBaseEntity;
+import org.litesoft.baseentity.BaseEntity;
 import org.litesoft.fields.Equivalance;
 import org.litesoft.fields.FieldAccessors;
 import org.litesoft.fields.FieldError;
@@ -14,9 +14,9 @@ import org.litesoft.fields.ToStringBuilder;
 import org.litesoft.utils.Cast;
 
 @SuppressWarnings("unused")
-public abstract class AbstractBaseISOwithBaseEntityFields<E extends AbstractBaseEntity<E>, T extends AbstractBaseISOwithBaseEntityFields<E, T>>
+public abstract class AbstractBaseISOwithBaseEntityFields<E extends BaseEntity<E>, T extends AbstractBaseISOwithBaseEntityFields<E, T>>
         implements BaseISOwithBaseEntityFields {
-    protected static <E extends AbstractBaseEntity<E>, T extends AbstractBaseISOwithBaseEntityFields<E, T>>
+    protected static <E extends BaseEntity<E>, T extends AbstractBaseISOwithBaseEntityFields<E, T>>
     FieldAccessors<T> addCommonFieldsFAS( FieldAccessors<T> fas ) {
         return fas
                 .optional( "version", /* . . */ BaseISOwithBaseEntityFields::getVersion, // for FAS should be first!
@@ -28,7 +28,7 @@ public abstract class AbstractBaseISOwithBaseEntityFields<E extends AbstractBase
                 ;
     }
 
-    protected static <E_SOURCE extends AbstractBaseEntity<E_SOURCE>, T_TARGET extends AbstractBaseISOwithBaseEntityFields<E_SOURCE, T_TARGET>>
+    protected static <E_SOURCE extends BaseEntity<E_SOURCE>, T_TARGET extends AbstractBaseISOwithBaseEntityFields<E_SOURCE, T_TARGET>>
     FieldMappers<T_TARGET, E_SOURCE> addFromEntity(
             FieldAccessors<T_TARGET> fasTarget, FieldAccessors<E_SOURCE> fasSource, FieldMappers<T_TARGET, E_SOURCE> mappers ) {
         return mappers

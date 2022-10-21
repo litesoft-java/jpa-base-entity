@@ -11,8 +11,8 @@ import org.litesoft.utils.Cast;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SuppressWarnings("UnnecessaryLocalVariable")
-class AbstractBaseEntityTest {
+@SuppressWarnings({"UnnecessaryLocalVariable", "NewClassNamingConvention"})
+class AbstractBaseEntityJPA_Test {
 
     @Test
     void test_SimpleEntity_FAS() {
@@ -73,14 +73,24 @@ class AbstractBaseEntityTest {
     }
 
     @SuppressWarnings("unused")
-    static class SimpleEntity extends AbstractBaseEntity<SimpleEntity> implements Serializable {
+    static class SimpleEntity extends AbstractBaseEntityJPA<SimpleEntity> implements Serializable {
         @Serial private static final long serialVersionUID = 1L;
-        public static FieldAccessors<SimpleEntity> FAS = createWithCommon( FieldAccessors.of( SimpleEntity.class ) )
+        public static final FieldAccessors<SimpleEntity> FAS = createWithCommon( FieldAccessors.of( SimpleEntity.class ) )
                 .optional( "value", SimpleEntity::getValue ).withType( String.class )
                 .done();
 
+        @Override
+        protected FieldAccessors<SimpleEntity> fas() {
+            return FAS;
+        }
+
+        @Override
+        public Class<SimpleEntity> type() {
+            return SimpleEntity.class;
+        }
+
         public SimpleEntity( UUID givenId ) {
-            super( SimpleEntity.class, givenId );
+            super( givenId );
         }
 
         protected SimpleEntity() {
@@ -101,22 +111,27 @@ class AbstractBaseEntityTest {
         public void setValue( String value ) {
             this.value = value;
         }
-
-        @Override
-        protected FieldAccessors<SimpleEntity> fas() {
-            return FAS;
-        }
     }
 
     @SuppressWarnings("unused")
-    static class OtherEntity extends AbstractBaseEntity<OtherEntity> implements Serializable {
+    static class OtherEntity extends AbstractBaseEntityJPA<OtherEntity> implements Serializable {
         @Serial private static final long serialVersionUID = 1L;
-        public static FieldAccessors<OtherEntity> FAS = createWithCommon( FieldAccessors.of( OtherEntity.class ) )
+        public static final FieldAccessors<OtherEntity> FAS = createWithCommon( FieldAccessors.of( OtherEntity.class ) )
                 .optional( "value", OtherEntity::getValue ).withType( String.class )
                 .done();
 
+        @Override
+        protected FieldAccessors<OtherEntity> fas() {
+            return FAS;
+        }
+
+        @Override
+        public Class<OtherEntity> type() {
+            return OtherEntity.class;
+        }
+
         public OtherEntity( UUID givenId ) {
-            super( OtherEntity.class, givenId );
+            super( givenId );
         }
 
         protected OtherEntity() {
@@ -136,11 +151,6 @@ class AbstractBaseEntityTest {
 
         public void setValue( String value ) {
             this.value = value;
-        }
-
-        @Override
-        protected FieldAccessors<OtherEntity> fas() {
-            return FAS;
         }
     }
 }
