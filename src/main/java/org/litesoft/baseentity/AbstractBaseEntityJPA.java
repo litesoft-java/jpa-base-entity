@@ -16,18 +16,18 @@ public abstract class AbstractBaseEntityJPA<T extends AbstractBaseEntityJPA<T>> 
         id = (givenId != null) ? givenId : UUID.randomUUID();
     }
 
-    @Override
-    public final UUID getId() {
+    @Override // Can't be final per Hibernate (JPA implementation)
+    public UUID getId() {
         return id;
     }
 
-    @Override
-    public final Long getVersion() {
+    @Override // Can't be final per Hibernate (JPA implementation)
+    public Long getVersion() {
         return version;
     }
 
     @Override
-    final void setVersion( Long version ) {
+    void setVersion( Long version ) {
         this.version = version;
     }
 }
